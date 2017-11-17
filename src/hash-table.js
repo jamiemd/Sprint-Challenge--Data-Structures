@@ -34,38 +34,72 @@ class HashTable {
   // If no bucket has been created for that index, instantiate a new bucket and add the key, value pair to that new bucket
   // If the key already exists in the bucket, the newer value should overwrite the older value associated with that key
   insert(key, value) {
-    if (this.capacityIsFull()) this.resize();
-    const index = getIndexBelowMax(key.toString(), this.limit);
-    let bucket = this.storage.get(index) || [];
+    // if (this.capacityIsFull()) this.resize();
+    // const index = getIndexBelowMax(key.toString(), this.limit);
+    // let bucket = this.storage.get(index) || [];
 
-    bucket = bucket.filter(item => item[0] !== key);
-    bucket.push([key, value]);
-    this.storage.set(index, bucket);
+    // bucket = bucket.filter(item => item[0] !== key);
+    // bucket.push([key, value]);
+    // this.storage.set(index, bucket);
+    const index = getIndexBelowMax(key.toString(), this.limit); // get index
+    const newNode = { value, next: null, }; // create node
+    let bucket = this.storage.get(index);
+
+    if (!bucket) {
+      bucket = newNode;
+      this.tail = this.bucket;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
   }
   // Removes the key, value pair from the hash table
   // Fetch the bucket associated with the given key using the getIndexBelowMax function
   // Remove the key, value pair from the bucket
   remove(key) {
-    const index = getIndexBelowMax(key.toString(), this.limit);
+    // const index = getIndexBelowMax(key.toString(), this.limit);
+    // let bucket = this.storage.get(index);
+
+    // if (bucket) {
+    //   bucket = bucket.filter(item => item[0] !== key);
+    //   this.storage.set(index, bucket);
+    // }
+    const index = getIndexBelowMax(key.toString(), this.limit); // get index
     let bucket = this.storage.get(index);
 
-    if (bucket) {
-      bucket = bucket.filter(item => item[0] !== key);
-      this.storage.set(index, bucket);
+    if (!bucket) {
+      return null;
     }
+    this.length--;
+    if (!bucket.next) {
+      this.tail = null;
+    }
+
+    const returnValue = bucket.value;
+    bucket = bucket.next;
+    this.storage.set(index, bucket);
   }
   // Fetches the value associated with the given key from the hash table
   // Fetch the bucket associated with the given key using the getIndexBelowMax function
   // Find the key, value pair inside the bucket and return the value
   retrieve(key) {
-    const index = getIndexBelowMax(key.toString(), this.limit);
-    const bucket = this.storage.get(index);
-    let retrieved;
-    if (bucket) {
-      retrieved = bucket.filter(item => item[0] === key)[0];
-    }
+    // const index = getIndexBelowMax(key.toString(), this.limit);
+    // const bucket = this.storage.get(index);
+    // let retrieved;
+    // if (bucket) {
+    //   retrieved = bucket.filter(item => item[0] === key)[0];
+    // }
 
-    return retrieved ? retrieved[1] : undefined;
+    // return retrieved ? retrieved[1] : undefined;
+    const index = getIndexBelowMax(key.toString(), this.limit);
+    let bucket = this.storage.get(index);
+    while (bucket) {
+      if (bucket.value === key) {
+        return true;
+      }
+      bucket = bucket.next;
+    }
+    return false;
   }
 }
 
